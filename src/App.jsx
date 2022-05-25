@@ -3,10 +3,29 @@ import logo from './logo.svg';
 import './App.css';
 
 function App() {
-  const [count, setCount] = useState(0);
+  let [targetText, setTarget] = useState('');
   const [todos, setTodos] = useState([]);
   const [isOpenMenu, toggleMenu] = useState(false);
-  const todolist = todos.map((todo) => <li key={todo}> {todo}</li>);
+  const todolist = todos.map((todo) => (
+    <li key={todo.code}>
+      <input
+        type="checkbox"
+        onChange={() => {
+          changeStatus(todo.code);
+        }}
+      />
+      <button
+        onClick={() => {
+          removeTodo(todo.code);
+        }}
+      >
+        ×
+      </button>
+      <p>CODE:{todo.code}</p>
+      <p>TEXT:{todo.text}</p>
+      <p>STATUS:{todo.status + ''}</p>
+    </li>
+  ));
 
   function test(b) {
     if (b) {
@@ -18,20 +37,42 @@ function App() {
   // HTMLの中に書く場合{isOpenMenu && <p>test</p>}
   // 三項演算子{isOpenMenu ? <p>true</p> : <p>false</p>}
   function addTodo() {
-    setTodos((todos) => [...todos, { code:"",text: 'test' + todos.length }]);
+    setTodos((todos) => [
+      ...todos,
+      { code: generateCode(), text: targetText, status: false },
+    ]);
   }
 
-  function removeTodo() {
-    setTodos(todos.filter((todo, index) => todo == 'test0'));
+  function removeTodo(target) {
+    setTodos(todos.filter((todo, index) => todo.code !== target));
   }
+
+  function generateCode() {
+    const code = Math.random().toString(32).substring(2);
+    todos.forEach((todo, i) => {
+      if (todo.code == code) {
+        code = Math.random().toString(32).substring(2);
+      }
+    });
+    return code;
+  }
+
+  function setTargetText(text) {
+    setTarget((targetText = text));
+  }
+  function changeStatus(target) {
+    console.log(target);
+    setTodos(
+      todos.map((todo, index) => {
+        if ((todo.code = target)) {
+          console.log('detect');
+        }
+      })
+    );
+  }
+
   return (
     <div className="App">
-      <p>
-        <button type="button" onClick={() => setCount((count) => count + 1)}>
-          count is: {count}
-        </button>
-      </p>
-
       <p>
         <button
           type="button"
@@ -51,15 +92,13 @@ function App() {
         >
           add
         </button>
-        <button
-          type="button"
-          onClick={() => {
-            // 削除はfillter
-            removeTodo();
+        <input
+          type="text"
+          value={targetText}
+          onChange={(event) => {
+            setTargetText(event.target.value);
           }}
-        >
-          remove
-        </button>
+        />
       </p>
       <ul>{todolist}</ul>
     </div>
