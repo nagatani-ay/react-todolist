@@ -1,19 +1,21 @@
 import { useState } from 'react';
 import logo from './logo.svg';
 import './App.css';
+import { TodoAddMenu } from './TodoAddMenu';
 
 function App() {
-  let [targetText, setTarget] = useState('');
+  const [test, setTest] = useState('test');
+  const [targetText, setTarget] = useState('');
   const [todos, setTodos] = useState([]);
   const [isOpenMenu, toggleMenu] = useState(false);
-  const todolist = todos.map((todo) => (
+  const todolist = todos.map((todo, index) => (
     <li key={todo.code}>
       <input
         type="checkbox"
-        onChange={() => {
-          changeStatus(todo.code);
-        }}
+        checked={todo.status}
+        onChange={() => changeTodo(todo.code, !todo.status, 'status')}
       />
+
       <button
         onClick={() => {
           removeTodo(todo.code);
@@ -21,34 +23,63 @@ function App() {
       >
         ×
       </button>
+
+      <button
+        onClick={() => {
+          toggleMenu((isOpenMenu) => !isOpenMenu);
+        }}
+      >
+        edit
+      </button>
+
       <p>CODE:{todo.code}</p>
       <p>TEXT:{todo.text}</p>
       <p>STATUS:{todo.status + ''}</p>
+      {editMenu(isOpenMenu, todo)}
     </li>
   ));
-
-  function test(b) {
+  function editMenu(b, data) {
+    let editText = '';
     if (b) {
-      return <p>text</p>;
+      return (
+        <div>
+          <input
+            type="text"
+            placeholder={data.text}
+            onChange={(event) => {
+              editText = event.target.value;
+            }}
+          />
+          <button
+            onClick={() => {
+              changeTodo(data.code, editText, 'text');
+              toggleMenu((isOpenMenu) => !isOpenMenu);
+            }}
+          >
+            enter
+          </button>
+        </div>
+      );
     } else {
-      return <span>text</span>;
+      return <span>no</span>;
     }
   }
-  // HTMLの中に書く場合{isOpenMenu && <p>test</p>}
-  // 三項演算子{isOpenMenu ? <p>true</p> : <p>false</p>}
-  function addTodo() {
-    setTodos((todos) => [
-      ...todos,
-      { code: generateCode(), text: targetText, status: false },
-    ]);
-  }
+  function changeTodo(target, data, type) {
+    console.log(target);
+    console.log(data);
 
-  function removeTodo(target) {
-    setTodos(todos.filter((todo, index) => todo.code !== target));
+    const list = todos.map((x) => x);
+    list.forEach((todo) => {
+      if (type == 'status') {
+        todo.code == target ? (todo.status = data) : todo.status;
+      } else if (type == 'text') {
+        todo.code == target ? (todo.text = data) : todo.text;
+      }
+    });
+    setTodos(list);
   }
-
   function generateCode() {
-    const code = Math.random().toString(32).substring(2);
+    let code = Math.random().toString(32).substring(2);
     todos.forEach((todo, i) => {
       if (todo.code == code) {
         code = Math.random().toString(32).substring(2);
@@ -56,50 +87,26 @@ function App() {
     });
     return code;
   }
-
-  function setTargetText(text) {
-    setTarget((targetText = text));
-  }
-  function changeStatus(target) {
-    console.log(target);
-    setTodos(
-      todos.map((todo, index) => {
-        if ((todo.code = target)) {
-          console.log('detect');
-        }
-      })
-    );
+  function removeTodo(target) {
+    setTodos(todos.filter((todo, index) => todo.code !== target));
   }
 
   return (
     <div className="App">
-      <p>
-        <button
-          type="button"
-          onClick={() => toggleMenu((isOpenMenu) => !isOpenMenu)}
-        >
-          isOpenMenu is: {isOpenMenu + ''}
-        </button>
-      </p>
+      <TodoAddMenu
+        setTodos={setTodos}
+        generateCode={() => generateCode()}
+        setTarget={setTarget}
+        targetText={targetText}
+      />
 
-      <p>
-        <button
-          type="button"
-          onClick={() => {
-            // pushはなどは再描画されないのでスプレット構文を使用して新たに配列を作成して保存
-            addTodo();
-          }}
-        >
-          add
-        </button>
-        <input
-          type="text"
-          value={targetText}
-          onChange={(event) => {
-            setTargetText(event.target.value);
-          }}
-        />
-      </p>
+      <button
+        type="button"
+        onClick={() => toggleMenu((isOpenMenu) => !isOpenMenu)}
+      >
+        isOpenMenu is: {isOpenMenu + ''}
+      </button>
+
       <ul>{todolist}</ul>
     </div>
   );
