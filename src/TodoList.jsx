@@ -46,9 +46,9 @@ export function TodoList(props) {
         changeTodo={(target, data, type) => changeTodo(target, data, type)}
       />
 
-      <p>CODE:{todo.code}</p>
+      {/* <p>CODE:{todo.code}</p> */}
       <p>TEXT:{todo.text}</p>
-      <p>STATUS:{todo.status + ''}</p>
+      {/* <p>STATUS:{todo.status + ''}</p> */}
     </li>
   ));
 
