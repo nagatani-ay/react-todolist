@@ -23,7 +23,7 @@ export function TodoList(props) {
   }
 
   const todolist = todos.map((todo, index) => (
-    <li key={todo.code}>
+    <li className="todolist" key={todo.code}>
       <input
         type="checkbox"
         checked={todo.status}
@@ -47,7 +47,7 @@ export function TodoList(props) {
       />
 
       {/* <p>CODE:{todo.code}</p> */}
-      <p>TEXT:{todo.text}</p>
+      <p>{todo.text}</p>
       {/* <p>STATUS:{todo.status + ''}</p> */}
     </li>
   ));
